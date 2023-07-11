@@ -9,7 +9,7 @@ executors:
     - image: docker:stable
   auth:
   username: wilsonlimdocker90
-  password: Birdbirdman90@
+  password: 
 jobs:
  publishLatestToHub: 
  executor: docker-publisher
