@@ -6,7 +6,7 @@ orbs:
 jobs:
   publish:
     docker:
-      - image: react
+      - image: wilsonlimdocker90/education-space
     steps:
       - checkout
       - setup_remote_docker
