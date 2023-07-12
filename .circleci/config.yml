@@ -3,28 +3,40 @@ version: 2.1
 orbs:
   docker: circleci/docker@2.2.0
 
-executors:
-  docker-publisher:
-    environment:
-      IMAGE_NAME: wilsonlimdocker90/education-space
-    docker: # Each job requires specifying an executor
-      - image: circleci/node:latest
-
 jobs:
-  publishLatestToHub:
-    executor: docker-publisher
+  test:
+    docker:
+      - image: wilsonlimdocker90/education-space
+    steps:
+      - checkout
+      # Add your test steps here
+      - run: echo "Running tests..."
+
+  publish:
+    docker:
+      - image: wilsonlimdocker90/education-space
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Publish Docker Image to Docker Hub
+          name: Login to Docker Hub
           command: |
-            echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-            docker build -t $IMAGE_NAME .
-            docker push $IMAGE_NAME:latest
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - run:
+          name: Build and publish Docker image
+          command: |
+            docker build -t my-docker-image:latest .
+            docker tag my-docker-image:latest $DOCKERHUB_USERNAME/my-docker-image:latest
+            docker push $DOCKERHUB_USERNAME/my-docker-image:latest
 
 workflows:
   version: 2
-  build-master:
+  build-and-publish:
     jobs:
-      - publishLatestToHub
+      - test
+      - publish:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
