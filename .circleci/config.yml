@@ -21,7 +21,7 @@ jobs:
           command: |
             echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             docker build -t $IMAGE_NAME .
-            docker push $IMAGE_NAME:assignment
+            docker push $IMAGE_NAME:latest
 
 workflows:
   version: 2
