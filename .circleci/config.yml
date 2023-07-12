@@ -6,7 +6,7 @@ orbs:
 jobs:
   publish:
     docker:
-      - image: REACT
+      - image: react
     steps:
       - checkout
       - setup_remote_docker
