@@ -1,30 +1,48 @@
 version: 2.1
-
 orbs:
-  docker: circleci/docker@2.2.0
-
-executors:
-  docker-publisher:
-    environment:
-      IMAGE_NAME: wilsonlimdocker90/education-space
+  node: circleci/node@5.0.1
+  docker: circleci/docker@2.1.4
+jobs:
+  build:
     docker:
       - image: cimg/node:16.10
-
-jobs:
-  publishLatestToHub:
-    executor: docker-publisher
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run: |
+          echo "Installing dependencies..."
+          npm install
+  test:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run: |
+          echo "Running tests..."
+          npm run test
+  build-and-push:
+    executor: docker/docker
+    steps:
       - setup_remote_docker
-      - run:
-          name: Publish Docker Image to Docker Hub
-          command: |
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-            docker build -t $IMAGE_NAME .
-            docker push $IMAGE_NAME:latest
+      - checkout
+      - docker/check
+      - docker/build:
+          image: wilsonlimdocker90/education-space
+          tag: 0.1.0
+      - docker/push:
+          image: wilsonlimdocker90/education-space
+          tag: 0.1.0
 
 workflows:
-  version: 2
-  build-master:
+  simple_workflow:
     jobs:
-      - publishLatestToHub
+      - build
+      - test:
+          requires:
+            - build
+      - build-and-push:
+          requires:
+            - test
