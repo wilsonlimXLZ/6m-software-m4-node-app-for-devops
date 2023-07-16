@@ -38,9 +38,6 @@ jobs:
           image: wilsonlimdocker90/education-space:${CIRCLE_TAG}
           # image: wilsonlimdocker90/education-space
           # # tag: 0.1.0
-    filters:
-      tags:
-        only: /^v\d+\.\d+\.\d+$/
   # deploy:
   #   docker:
   #       - image: cimg/node:16.10
