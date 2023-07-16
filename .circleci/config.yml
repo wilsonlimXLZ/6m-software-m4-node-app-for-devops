@@ -26,12 +26,13 @@ jobs:
           npm run test
   build-and-push:
     executor: docker/docker
-    environment:
-      TAG: << pipeline.git.tag >>
     steps:
       - setup_remote_docker
       - checkout
       - docker/check
+      - run:
+          name: Set Tag Environment Variable
+          command: echo "export TAG=$(git describe --tags --abbrev=0)" >> $BASH_ENV
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
