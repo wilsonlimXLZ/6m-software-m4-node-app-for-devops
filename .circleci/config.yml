@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
-            docker build -t wilsonlimdocker90/education-space:<< pipeline.git.tag >> 
+            docker build -t wilsonlimdocker90/education-space:<< pipeline.git.tag >> .
             docker push wilsonlimdocker90/education-space:<< pipeline.git.tag >>
       # - docker/build:
       #     image: wilsonlimdocker90/education-space
