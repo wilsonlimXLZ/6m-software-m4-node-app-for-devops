@@ -30,17 +30,14 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check
-      - run:
-        name: Replace slashes in tag
-        command: |
-          export TAG=$(echo "<< pipeline.git.tag >>" | sed 's/\//-/')
-          echo $TAG
       - docker/build:
-          image: wilsonlimdocker90/education-space:<< pipeline.git.tag >>
+          image: wilsonlimdocker90/education-space
+          tag: << pipeline.git.tag >>
           # image: wilsonlimdocker90/education-space
           # tag: 0.1.0
       - docker/push:
-          image: wilsonlimdocker90/education-space:<< pipeline.git.tag >>
+          image: wilsonlimdocker90/education-space
+          tag: << pipeline.git.tag >>
           # image: wilsonlimdocker90/education-space
           # # tag: 0.1.0
   # deploy:
