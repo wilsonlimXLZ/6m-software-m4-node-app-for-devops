@@ -30,16 +30,17 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check
-      - docker/build:
-          image: wilsonlimdocker90/education-space
-          tag: << pipeline.git.tag >>
-          # image: wilsonlimdocker90/education-space
-          # tag: 0.1.0
-      - docker/push:
-          image: wilsonlimdocker90/education-space
-          tag: << pipeline.git.tag >>
-          # image: wilsonlimdocker90/education-space
-          # # tag: 0.1.0
+       - run:
+         name: Publish Docker Image to Docker Hub
+         command: |
+           docker build -t wilsonlimdocker90/education-space:<< pipeline.git.tag >> .
+           docker push wilsonlimdocker90/education-space:<< pipeline.git.tag >>
+      # - docker/build:
+      #     image: wilsonlimdocker90/education-space
+      #     tag: << pipeline.git.tag >>
+      # - docker/push:
+      #     image: wilsonlimdocker90/education-space
+      #     tag: << pipeline.git.tag >>
   # deploy:
   #   docker:
   #       - image: cimg/node:16.10
