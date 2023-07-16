@@ -70,6 +70,9 @@ workflows:
       - build-and-push:
           requires:
             - test
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+/
       # - deploy:
       #     requires:
       #       - build-and-push
