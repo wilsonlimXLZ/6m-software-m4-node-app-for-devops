@@ -31,13 +31,11 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: wilsonlimdocker90/education-space
-          tag: ${CIRCLE_TAG}
+          image: wilsonlimdocker90/education-space:<< pipeline.git.tag >> 
           # image: wilsonlimdocker90/education-space
           # tag: 0.1.0
       - docker/push:
-          image: wilsonlimdocker90/education-space
-          tag: ${CIRCLE_TAG}
+          image: wilsonlimdocker90/education-space:<< pipeline.git.tag >> 
           # image: wilsonlimdocker90/education-space
           # # tag: 0.1.0
   # deploy:
