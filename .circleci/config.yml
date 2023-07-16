@@ -31,35 +31,46 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: wilsonlimdocker90/education-space
-          tag: 0.1.0
+          image: wilsonlimdocker90/education-space:${CIRCLE_TAG}
+          # image: wilsonlimdocker90/education-space
+          # tag: 0.1.0
       - docker/push:
-          image: wilsonlimdocker90/education-space
-          tag: 0.1.0
-  deploy:
-    docker:
-        - image: cimg/node:16.10
-    steps:
-        - setup_remote_docker      
-        - heroku/install
-        - checkout
-        - run:
-            name: Heroku Container Push
-            command: | 
-                heroku container:login
-                heroku container:push web -a wilsonlim-su-devops
-                heroku container:release web -a wilsonlim-su-devops
+          image: wilsonlimdocker90/education-space:${CIRCLE_TAG}
+          # image: wilsonlimdocker90/education-space
+          # # tag: 0.1.0
+  # deploy:
+  #   docker:
+  #       - image: cimg/node:16.10
+  #   steps:
+  #       - setup_remote_docker      
+  #       - heroku/install
+  #       - checkout
+  #       - run:
+  #           name: Heroku Container Push
+  #           command: | 
+  #               heroku container:login
+  #               heroku container:push web -a wilsonlim-su-devops
+  #               heroku container:release web -a wilsonlim-su-devops
 
 workflows:
   simple_workflow:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: main
       - test:
           requires:
             - build
+          filters:
+            branches:
+              only: main         
       - build-and-push:
           requires:
             - test
-      - deploy:
-          requires:
-            - build-and-push
+          filters:
+            tags:
+            only: /^v\d+\.\d+\.\d+$/
+      # - deploy:
+      #     requires:
+      #       - build-and-push
