@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.1
   docker: circleci/docker@2.1.4
-  heroku: circleci/heroku@2.0.0
+  snyk: snyk/snyk@1.5.0
 jobs:
   build:
     docker:
@@ -12,7 +12,7 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run: |
-          echo "Installing dependencies.."
+          echo "Installing dependencies..."
           npm install
   test:
     docker:
@@ -24,59 +24,26 @@ jobs:
       - run: |
           echo "Running tests..."
           npm run test
-  build-and-push:
-    executor: docker/docker
+  scan:
+    docker:
+        - image: cimg/node:16.10
+    environment:
+        IMAGE_NAME: terencegaffudsu/education-space
     steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - run:
-          name: Set Tag Environment Variable
-          command: echo "export TAG=$(git describe --tags --abbrev=0)" >> $BASH_ENV
-      - run:
-          name: Publish Docker Image to Docker Hub
-          command: |
-            docker build -t wilsonlimdocker90/education-space:$TAG .
-            docker push wilsonlimdocker90/education-space:$TAG
-      # - docker/build:
-      #     image: wilsonlimdocker90/education-space
-      #     tag: << pipeline.git.tag >>
-      # - docker/push:
-      #     image: wilsonlimdocker90/education-space
-      #     tag: << pipeline.git.tag >>
-  # deploy:
-  #   docker:
-  #       - image: cimg/node:16.10
-  #   steps:
-  #       - setup_remote_docker      
-  #       - heroku/install
-  #       - checkout
-  #       - run:
-  #           name: Heroku Container Push
-  #           command: | 
-  #               heroku container:login
-  #               heroku container:push web -a wilsonlim-su-devops
-  #               heroku container:release web -a wilsonlim-su-devops
+        - checkout
+        - setup_remote_docker      
+        - docker/check
+        - run: docker build -t $IMAGE_NAME .
+        - snyk/scan: 
+            docker-image-name: $IMAGE_NAME
 
 workflows:
   simple_workflow:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: main
+      - build
       - test:
           requires:
             - build
-          filters:
-            branches:
-              only: main         
-      - build-and-push:
+      - scan:
           requires:
-            - test
-          filters:
-            tags:
-              only: /^v\d+\.\d+\.\d+/
-      # - deploy:
-      #     requires:
-      #       - build-and-push
+            - build
